@@ -2,20 +2,15 @@ package de.nebalus.framework.nfw.module;
 
 public class Module {
 	
-	protected String moduleVersion;
+	protected final ModuleType moduleType;
 	
-	/**
-	 * Returns the current module version
-	 * 
-	 * @throws NullPointerException if the version of the {@code Module}
-	 *         is null
-	 * 
-	 * @return The version of this {@code Module} as a {@code String} 
-	 */
-	public String getModuleVersion() {
-		if(moduleVersion != null)
-			throw new NullPointerException("There is no information about the module");
-			
-		return moduleVersion;
+	protected Module(ModuleType moduleType) {
+		this.moduleType = moduleType;
 	}
+	
+	public final ModuleType getModuleType()
+	{
+		return moduleType;
+	}
+	
 }

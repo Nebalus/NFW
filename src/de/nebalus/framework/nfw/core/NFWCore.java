@@ -36,7 +36,7 @@ public final class NFWCore {
 		Logger.logInfo(FRAMEWORKNAME + " v" + FRAMEWORKVERSION + " has been loaded! [" + CACHE.loadStartUpMS + "ms]");
 		CACHE.isLoaded = true;
 		
-		Logger.logInfo("Starting Programm...");
+		Logger.logInfo("Starting Executable Programm...");
 	}
 	
 	/**
@@ -80,11 +80,10 @@ final class NFWCache {
 		if(loadedModules.containsKey(moduleClass)) return;
 		
 		try {
-			Logger.logDebug(moduleClass, "Loading Module...");
-			
 			Constructor<? extends Module> obj = moduleClass.getConstructor();
 			Module module = obj.newInstance();
 			loadedModules.put(moduleClass, module);
+			Logger.logDebug(moduleClass, "Loaded... v" + module.getModuleType().getModuleVersion());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
