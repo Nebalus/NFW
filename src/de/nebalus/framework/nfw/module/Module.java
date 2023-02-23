@@ -1,4 +1,4 @@
-package de.nebalus.framework.nfw.testing;
+package de.nebalus.framework.nfw.module;
 
 public class Module {
 	

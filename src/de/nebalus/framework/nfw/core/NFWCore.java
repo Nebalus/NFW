@@ -3,8 +3,8 @@ package de.nebalus.framework.nfw.core;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
+import de.nebalus.framework.nfw.module.Module;
 import de.nebalus.framework.nfw.module.ModuleType;
-import de.nebalus.framework.nfw.testing.Module;
 import de.nebalus.framework.nfw.utils.logger.Logger;
 
 public final class NFWCore {
@@ -20,26 +20,30 @@ public final class NFWCore {
 	 * Loads the framework
 	 */
 	public static synchronized void load() {
-		if(CACHE != null && CACHE.isLoaded) return;
+		if(isLoaded()) return;
 		
 		Logger.logInfo("Loading the " + FRAMEWORKNAME + " v" + FRAMEWORKVERSION + " by: " + AUTHOR + ", Github: " + GITHUBREPO);
 		
 		CACHE = new NFWCache();
 		CACHE.startUpTimeStamp = System.currentTimeMillis();
 		
-		CACHE.registerModule(ModuleType.DCBOTBUILDER);		
+		for(ModuleType mtype : ModuleType.values()) {
+			CACHE.registerModule(mtype);
+		}
 		
 		CACHE.loadStartUpMS = System.currentTimeMillis() - CACHE.startUpTimeStamp;
 		
 		Logger.logInfo(FRAMEWORKNAME + " v" + FRAMEWORKVERSION + " has been loaded! [" + CACHE.loadStartUpMS + "ms]");
 		CACHE.isLoaded = true;
+		
+		Logger.logInfo("Starting Programm...");
 	}
 	
 	/**
 	 * Unloads the framework and flushes all the cached data
 	 */
 	public static synchronized void unload() {
-		if(CACHE != null && !CACHE.isLoaded) return;
+		if(!isLoaded()) return;
 		
 		CACHE = null;
 	}
@@ -50,6 +54,16 @@ public final class NFWCore {
 	public static boolean isLoaded()
 	{
 		return CACHE != null ? CACHE.isLoaded : false;
+	}
+
+	public static Module getModule(ModuleType moduleType) throws IllegalAccessException
+	{
+		if(!isLoaded()) throw new IllegalAccessException("The " + FRAMEWORKNAME + " is not loaded");
+		if(!CACHE.loadedModules.containsKey(moduleType.getModuleClass())) throw new IllegalAccessException("The " + moduleType.name() + " module is not loaded");
+		Module module;
+		if((module = CACHE.loadedModules.get(moduleType.getModuleClass())) == null) throw new NullPointerException("The " + moduleType.name() + " module is not loaded correctly");
+		
+		return module;
 	}
 }
 
@@ -66,6 +80,8 @@ final class NFWCache {
 		if(loadedModules.containsKey(moduleClass)) return;
 		
 		try {
+			Logger.logDebug(moduleClass, "Loading Module...");
+			
 			Constructor<? extends Module> obj = moduleClass.getConstructor();
 			Module module = obj.newInstance();
 			loadedModules.put(moduleClass, module);

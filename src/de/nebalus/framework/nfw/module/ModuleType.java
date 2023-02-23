@@ -1,15 +1,14 @@
 package de.nebalus.framework.nfw.module;
 
 import de.nebalus.framework.nfw.module.dcbotbuilder.DCBotBuilderModule;
-import de.nebalus.framework.nfw.testing.Module;
 
 public enum ModuleType {
 
-	DCBOTBUILDER(DCBotBuilderModule.class, "0.0.1");
+	DCBOTBUILDER(DCBotBuilderModule.class);
 	
 	private Class<? extends Module> moduleClass;
 	
-	ModuleType(Class<? extends Module> moduleClass, String version) {
+	ModuleType(Class<? extends Module> moduleClass) {
 		this.moduleClass = moduleClass;
 	}
 	

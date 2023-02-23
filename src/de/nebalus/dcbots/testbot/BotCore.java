@@ -3,6 +3,9 @@ package de.nebalus.dcbots.testbot;
 import javax.security.auth.login.LoginException;
 
 import de.nebalus.framework.nfw.core.NFWCore;
+import de.nebalus.framework.nfw.module.ModuleType;
+import de.nebalus.framework.nfw.module.dcbotbuilder.DCBotBuilderModule;
+import de.nebalus.framework.nfw.utils.logger.Logger;
 
 public class BotCore 
 {
@@ -12,7 +15,9 @@ public class BotCore
 		{
 			NFWCore.load();
 			
-			//new BotCore();
+			//Logger.log(((DCBotBuilderModule) NFWCore.getModule(ModuleType.DCBOTBUILDER)));
+			
+			new BotCore();
 		}
 		catch(Exception e)
 		{
