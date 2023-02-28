@@ -1,0 +1,3 @@
+Eine Framework das verschidende module beinhaltet... mann kann sie aktivieren, reloaded (neue instance von dem module generieren), deaktivieren, unloaden()
+
+Wichtige NOTIZ: Die module sind nur für den Daten Speicher zuständig z.B Die Userdaten von demm nutzern wo sich ein DC Bot befindet gehen in Module und die Host Instance wird in einer Seperaten klasse gemanaged
