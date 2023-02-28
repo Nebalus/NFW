@@ -3,12 +3,14 @@ package de.nebalus.framework.nfw.module;
 import de.nebalus.framework.nfw.module.dcbotbuilder.DCBotBuilderModule;
 import de.nebalus.framework.nfw.module.minecraft.MinecraftModule;
 import de.nebalus.framework.nfw.module.template.TemplateModule;
+import de.nebalus.framework.nfw.module.ui.UIModule;
 
 public enum ModuleType {
 
-	DCBOTBUILDER(DCBotBuilderModule.class, "0.0.1", ""),
-	MINECRAFT(MinecraftModule.class, "0.0.1", ""),
-	TEMPLATE(TemplateModule.class, "0.0.1", "A simple ");
+	DCBOTBUILDER(DCBotBuilderModule.class, "0.0.1", "This extends the JDA v5 API for making better Discord Bots"),
+	MINECRAFT(MinecraftModule.class, "0.0.1", "A libary with a lots of helpful stuff... MC v1.19"),
+	TEMPLATE(TemplateModule.class, "0.0.1", "A simple Template"),
+	UI(UIModule.class, "0.0.1", "A simple Libary helps creating UI better");
 	
 	private final Class<? extends Module> moduleClass;
 	private final String moduleVersion;

@@ -4,7 +4,7 @@ public class Module {
 	
 	protected final ModuleType moduleType;
 	
-	protected Module(ModuleType moduleType) {
+	public Module(ModuleType moduleType) {
 		this.moduleType = moduleType;
 	}
 	
