@@ -13,12 +13,12 @@ import de.nebalus.framework.nfw.utils.logger.Logger;
 public final class NFWCore {
 	
 	public static final String FRAMEWORKNAME = "NebalusFrameWork";
-	public static final String FRAMEWORKVERSION = "0.0.1";
+	public static final String FRAMEWORKVERSION = "0.0.2";
 	public static final String GITHUBREPO = "https://github.com/Nebalus/NFW";
 	public static final String AUTHOR = "Nebalus";
 	
-	private static boolean isLoaded = false;  // If the framework is fully initialized 
-	private static boolean isLoading = false; // If the framework is initializing
+	private static boolean isLoaded = false;  // True if the framework is fully loaded 
+	private static boolean isLoading = false; // True if the framework is still loading
 	
 	private static ConcurrentHashMap<ModuleType, Module> enabledModules;
 	
@@ -27,7 +27,7 @@ public final class NFWCore {
 	 */
 	public static synchronized void loadFramework(ModuleType... moduletypes) {
 		if(isLoaded()) throw new FrameworkRuntimeException("The " + FRAMEWORKNAME + " is allready loaded");
-		if(isLoading()) throw new FrameworkRuntimeException("The " + FRAMEWORKNAME + " is loading allready... please wait");
+		if(isLoading()) throw new FrameworkRuntimeException("The " + FRAMEWORKNAME + " is allready loading... please wait");
 		
 		isLoading = true;
 		
@@ -47,7 +47,7 @@ public final class NFWCore {
 		isLoaded = true;
 		isLoading = false;
 		
-		Logger.logInfo("Starting Executable Programm...");
+		Logger.logInfo("Starting the executable programm...");
 	}
 	
 	/**
@@ -84,8 +84,11 @@ public final class NFWCore {
 	}
 	
 	/**
+	 * Enables a module in the framework
 	 * 
-	 * @param moduleType
+	 * @param moduleType of the module you want to enable
+	 * 
+	 * @throws FrameworkRuntimeException if the framework is not loaded or the module {@code ModuleType} is allready enabled
 	 */
 	public static synchronized void enableModule(ModuleType moduleType)
 	{
@@ -110,6 +113,13 @@ public final class NFWCore {
 		}
 	}
 	
+	/**
+	 * Disables a module in the framework
+	 * 
+	 * @param moduleType of the module you want to disable
+	 * 
+	 * @throws FrameworkRuntimeException if the framework is not loaded or the module {@code ModuleType} is allready diabled
+	 */
 	public static synchronized void disableModule(ModuleType moduleType)
 	{
 		if(!isLoaded() && !isLoading()) throw new FrameworkRuntimeException("The " + FRAMEWORKNAME + " is not loaded");

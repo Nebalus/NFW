@@ -7,9 +7,9 @@ public final class Logger {
 	
 	private static final LinkedList<LoggedObject> HISTORYLOG = new LinkedList<LoggedObject>();
 	
-	public static synchronized void log(LogType logType, Class<?> logClass, Object message)
+	public static synchronized void log(LogType logType, String logPrefixText, Object message)
 	{
-		final LoggedObject logged_object = new LoggedObject(System.currentTimeMillis(), logType, logClass, message);
+		final LoggedObject logged_object = new LoggedObject(System.currentTimeMillis(), logType, logPrefixText, message);
 		
 		if(logType.shouldDisplayAsError())
 		{
@@ -30,7 +30,12 @@ public final class Logger {
 	
 	public static void log(Class<?> logType, Object message)
 	{
-		log(LogType.NORMAL, logType, message);
+		log(LogType.NORMAL, logType.getSimpleName(), message);
+	}
+	
+	public static void log(String logPrefixText, Object message)
+	{
+		log(LogType.NORMAL, logPrefixText, message);
 	}
 	
 	public static void log(Object message)
@@ -40,7 +45,12 @@ public final class Logger {
 	
 	public static void logError(Class<?> logType, Object message)
 	{
-		log(LogType.ERROR, logType, message);
+		log(LogType.ERROR, logType.getSimpleName(), message);
+	}
+	
+	public static void logError(String logPrefixText, Object message)
+	{
+		log(LogType.ERROR, logPrefixText, message);
 	}
 	
 	public static void logError(Object message)
@@ -50,7 +60,12 @@ public final class Logger {
 	
 	public static void logWarning(Class<?> logType, Object message)
 	{
-		log(LogType.WARNING, logType, message);
+		log(LogType.WARNING, logType.getSimpleName(), message);
+	}
+	
+	public static void logWarning(String logPrefixText, Object message)
+	{
+		log(LogType.WARNING, logPrefixText, message);
 	}
 	
 	public static void logWarning(Object message)
@@ -60,7 +75,12 @@ public final class Logger {
 	
 	public static void logInfo(Class<?> logType, Object message)
 	{
-		log(LogType.INFO, logType, message);
+		log(LogType.INFO, logType.getSimpleName(), message);
+	}
+	
+	public static void logInfo(String logPrefixText, Object message)
+	{
+		log(LogType.INFO, logPrefixText, message);
 	}
 	
 	public static void logInfo(Object message)
@@ -70,7 +90,12 @@ public final class Logger {
 	
 	public static void logDebug(Class<?> logType, Object message)
 	{
-		log(LogType.DEBUG, logType, message);
+		log(LogType.DEBUG, logType.getSimpleName(), message);
+	}
+	
+	public static void logDebug(String logPrefixText, Object message)
+	{
+		log(LogType.DEBUG, logPrefixText, message);
 	}
 	
 	public static void logDebug(Object message)

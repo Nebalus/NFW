@@ -4,6 +4,7 @@ import de.nebalus.dcbots.melody.listener.InteractionListener;
 import de.nebalus.framework.nfw.core.NFWCore;
 import de.nebalus.framework.nfw.module.ModuleType;
 import de.nebalus.framework.nfw.module.dcbotbuilder.DCBotBuilderModule;
+import de.nebalus.framework.nfw.module.dcbotbuilder.DCBotInstance;
 import de.nebalus.framework.nfw.utils.logger.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -13,22 +14,18 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
-public class Melody
-{
+public class Melody {
+	
 	public static Melody BOTINSTANCE;
 	
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 		NFWCore.loadFramework(ModuleType.DCBOTBUILDER); // Loads the needed modules
-			
-		try
-		{	
+				
+		try {	
 			DCBotBuilderModule module = (DCBotBuilderModule) NFWCore.getModule(ModuleType.DCBOTBUILDER);
 
 			BOTINSTANCE = new Melody();
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -37,8 +34,7 @@ public class Melody
 	
 	private final Long startUpTimestamp; 
 	
-	private Melody() throws Exception
-	{
+	private Melody() throws Exception {
 		Logger.log("Building Melodys gateway connection to Discord...");
 		
 		startUpTimestamp = System.currentTimeMillis();
