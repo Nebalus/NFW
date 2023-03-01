@@ -3,6 +3,7 @@ package de.nebalus.dcbots.melody.core;
 import de.nebalus.dcbots.melody.listener.InteractionListener;
 import de.nebalus.framework.nfw.core.NFWCore;
 import de.nebalus.framework.nfw.module.ModuleType;
+import de.nebalus.framework.nfw.module.dcbotbuilder.DCBotBuilderModule;
 import de.nebalus.framework.nfw.utils.logger.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -22,6 +23,8 @@ public class Melody
 			
 		try
 		{	
+			DCBotBuilderModule module = (DCBotBuilderModule) NFWCore.getModule(ModuleType.DCBOTBUILDER);
+
 			BOTINSTANCE = new Melody();
 		}
 		catch(Exception e)

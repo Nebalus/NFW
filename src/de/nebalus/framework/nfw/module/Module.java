@@ -8,7 +8,7 @@ public abstract class Module {
 		this.moduleType = moduleType;
 	}
 	
-	public ModuleType getModuleType()
+	public final ModuleType getModuleType()
 	{
 		return moduleType;
 	}

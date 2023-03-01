@@ -4,6 +4,8 @@ import java.util.Map.Entry;
 import java.lang.reflect.Constructor;
 import java.util.concurrent.ConcurrentHashMap;
 
+import de.nebalus.framework.nfw.core.exception.FrameworkException;
+import de.nebalus.framework.nfw.core.exception.FrameworkRuntimeException;
 import de.nebalus.framework.nfw.module.Module;
 import de.nebalus.framework.nfw.module.ModuleType;
 import de.nebalus.framework.nfw.utils.logger.Logger;
@@ -16,14 +18,18 @@ public final class NFWCore {
 	public static final String AUTHOR = "Nebalus";
 	
 	private static boolean isLoaded = false;  // If the framework is fully initialized 
+	private static boolean isLoading = false; // If the framework is initializing
 	
 	private static ConcurrentHashMap<ModuleType, Module> enabledModules;
 	
 	/**
-	 * Loads the framework
+	 * Loads the framework instance
 	 */
 	public static synchronized void loadFramework(ModuleType... moduletypes) {
-		if(isLoaded()) return;
+		if(isLoaded()) throw new FrameworkRuntimeException("The " + FRAMEWORKNAME + " is allready loaded");
+		if(isLoading()) throw new FrameworkRuntimeException("The " + FRAMEWORKNAME + " is loading allready... please wait");
+		
+		isLoading = true;
 		
 		Logger.logInfo("Loading the " + FRAMEWORKNAME + " v" + FRAMEWORKVERSION + " by: " + AUTHOR + ", Github: " + GITHUBREPO);
 		
@@ -39,17 +45,17 @@ public final class NFWCore {
 		
 		Logger.logInfo(FRAMEWORKNAME + " v" + FRAMEWORKVERSION + " has been loaded! [" + loadStartUpMS + "ms]");
 		isLoaded = true;
+		isLoading = false;
 		
 		Logger.logInfo("Starting Executable Programm...");
 	}
 	
 	/**
 	 * Unloads the framework and flushes all the cached data
-	 * 
-	 * PLEASE Call this methode at the shutdown procces
 	 */
 	public static synchronized void unloadFramework() {
-		if(!isLoaded()) return;
+		if(!isLoaded()) throw new FrameworkRuntimeException("The " + FRAMEWORKNAME + " is not loaded");
+		if(isLoading()) throw new FrameworkRuntimeException("The " + FRAMEWORKNAME + " is still loading");
 		
 		Logger.logInfo("Unloading the " + FRAMEWORKNAME + " v" + FRAMEWORKVERSION);
 		
@@ -62,16 +68,29 @@ public final class NFWCore {
 	}
 	
 	/**
-	 * @return if the framework is initialized
+	 * @return {@Code true} if the framework is fully initialized/loaded
 	 */
 	public static boolean isLoaded()
 	{
 		return isLoaded;
 	}
 
+	/**
+	 * @return {@Code true} if the framework is initializing
+	 */
+	public static boolean isLoading()
+	{
+		return isLoading;
+	}
+	
+	/**
+	 * 
+	 * @param moduleType
+	 */
 	public static synchronized void enableModule(ModuleType moduleType)
 	{
-		if(enabledModules.containsKey(moduleType)) return;
+		if(!isLoaded() && !isLoading()) throw new FrameworkRuntimeException("The " + FRAMEWORKNAME + " is not loaded");
+		if(enabledModules.containsKey(moduleType)) throw new FrameworkRuntimeException("The module '" + moduleType.name() + "' is allready enabled");
 		
 		Class<? extends Module> moduleClass = moduleType.getModuleClass();
 		String moduleName = moduleClass.getSimpleName();
@@ -93,8 +112,9 @@ public final class NFWCore {
 	
 	public static synchronized void disableModule(ModuleType moduleType)
 	{
-		if(!enabledModules.containsKey(moduleType)) return;
-			
+		if(!isLoaded() && !isLoading()) throw new FrameworkRuntimeException("The " + FRAMEWORKNAME + " is not loaded");
+		if(!enabledModules.containsKey(moduleType)) throw new FrameworkRuntimeException("The module '" + moduleType.name() + "' is allready disabled");
+		
 		String moduleName = moduleType.getModuleClass().getSimpleName();
 		Module module = enabledModules.get(moduleType);
 		
@@ -105,18 +125,14 @@ public final class NFWCore {
 		
 		Logger.logDebug("'" + moduleName + "' v" + moduleType.getModuleVersion() + " module disabled!");
 	}
-	
-	
-//	
-//	public static Module getModule(ModuleType moduleType) throws IllegalAccessException
-//	{
-//		if(!isLoaded()) throw new IllegalAccessException("The " + FRAMEWORKNAME + " is not loaded");
-//		if(!CACHE.loadedModules.containsKey(moduleType.getModuleClass())) throw new IllegalAccessException("The " + moduleType.name() + " module is not enabled");
-//		Module module;
-//		if((module = CACHE.loadedModules.get(moduleType.getModuleClass())) == null) throw new NullPointerException("The " + moduleType.name() + " module is not loaded correctly");
-//		
-//		return module;
-//	}
+		
+	public static Module getModule(ModuleType moduleType) throws FrameworkException
+	{
+		if(!isLoaded()) throw new FrameworkException("The " + FRAMEWORKNAME + " is not loaded");
+		if(!enabledModules.containsKey(moduleType)) throw new FrameworkException("The module '" + moduleType.name() + "' is not enabled");
+		
+		return enabledModules.get(moduleType);
+	}
 
 }
 
