@@ -1,7 +1,7 @@
 package de.nebalus.framework.nfw.core;
 
+import java.util.Map.Entry;
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.nebalus.framework.nfw.module.Module;
@@ -14,58 +14,116 @@ public final class NFWCore {
 	public static final String FRAMEWORKVERSION = "0.0.1";
 	public static final String GITHUBREPO = "https://github.com/Nebalus/NFW";
 	public static final String AUTHOR = "Nebalus";
-}
-//  private static NFWCache CACHE;
-//	/**
-//	 * Loads the framework
-//	 */
-//	public static synchronized void load() {
-//		if(isLoaded()) return;
-//		
-//		Logger.logInfo("Loading the " + FRAMEWORKNAME + " v" + FRAMEWORKVERSION + " by: " + AUTHOR + ", Github: " + GITHUBREPO);
-//		
-//		CACHE = new NFWCache();
-//		CACHE.startUpTimeStamp = System.currentTimeMillis();
-//		
-//		for(ModuleType mtype : ModuleType.values()) {
-//			CACHE.loadModule(mtype);
-//		}
-//		
-//		CACHE.loadStartUpMS = System.currentTimeMillis() - CACHE.startUpTimestamp;
-//		
-//		Logger.logInfo(FRAMEWORKNAME + " v" + FRAMEWORKVERSION + " has been loaded! [" + CACHE.loadStartUpMS + "ms]");
-//		CACHE.isLoaded = true;
-//		
-//		Logger.logInfo("Starting Executable Programm...");
-//	}
+	
+	private static boolean isLoaded = false;  // If the framework is fully initialized 
+	
+	private static ConcurrentHashMap<ModuleType, Module> enabledModules;
+	
+	/**
+	 * Loads the framework
+	 */
+	public static synchronized void loadFramework(ModuleType... moduletypes) {
+		if(isLoaded()) return;
+		
+		Logger.logInfo("Loading the " + FRAMEWORKNAME + " v" + FRAMEWORKVERSION + " by: " + AUTHOR + ", Github: " + GITHUBREPO);
+		
+		long startUpTimestamp = System.currentTimeMillis();
+		
+		enabledModules = new ConcurrentHashMap<ModuleType, Module>();
+		
+		for(ModuleType mtype : moduletypes) {
+			enableModule(mtype);
+		}
+		
+		long loadStartUpMS = System.currentTimeMillis() - startUpTimestamp;
+		
+		Logger.logInfo(FRAMEWORKNAME + " v" + FRAMEWORKVERSION + " has been loaded! [" + loadStartUpMS + "ms]");
+		isLoaded = true;
+		
+		Logger.logInfo("Starting Executable Programm...");
+	}
+	
+	/**
+	 * Unloads the framework and flushes all the cached data
+	 * 
+	 * PLEASE Call this methode at the shutdown procces
+	 */
+	public static synchronized void unloadFramework() {
+		if(!isLoaded()) return;
+		
+		Logger.logInfo("Unloading the " + FRAMEWORKNAME + " v" + FRAMEWORKVERSION);
+		
+		for(Entry<ModuleType, Module> entry : enabledModules.entrySet())
+		{
+			disableModule(entry.getKey());
+		}
+		
+		isLoaded = false; // Place at the end of this methode
+	}
+	
+	/**
+	 * @return if the framework is initialized
+	 */
+	public static boolean isLoaded()
+	{
+		return isLoaded;
+	}
+
+	public static synchronized void enableModule(ModuleType moduleType)
+	{
+		if(enabledModules.containsKey(moduleType)) return;
+		
+		Class<? extends Module> moduleClass = moduleType.getModuleClass();
+		String moduleName = moduleClass.getSimpleName();
+		
+		try {
+			Constructor<? extends Module> constructor = moduleClass.getConstructor();
+			Module module = constructor.newInstance();
+			
+			Logger.logDebug("Enabling module '" + moduleName + "' v" + moduleType.getModuleVersion() + "...");
+			
+			module.onEnable();
+			enabledModules.put(moduleType, module);
+			
+			Logger.logDebug("'" + moduleName + "' v" + moduleType.getModuleVersion() + " module enabled!");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static synchronized void disableModule(ModuleType moduleType)
+	{
+		if(!enabledModules.containsKey(moduleType)) return;
+			
+		String moduleName = moduleType.getModuleClass().getSimpleName();
+		Module module = enabledModules.get(moduleType);
+		
+		Logger.logDebug("Disabling module '" + moduleName + "' v" + moduleType.getModuleVersion() + "...");
+		
+		enabledModules.remove(moduleType);
+		module.onDisable();
+		
+		Logger.logDebug("'" + moduleName + "' v" + moduleType.getModuleVersion() + " module disabled!");
+	}
+	
+	
 //	
-//	/**
-//	 * Unloads the framework and flushes all the cached data
-//	 */
-//	public static synchronized void unload() {
-//		if(!isLoaded()) return;
-//		
-//		CACHE = null;
-//	}
-//	
-//	/**
-//	 * @return if the framework is initialized
-//	 */
-//	public static boolean isLoaded()
-//	{
-//		return CACHE != null ? CACHE.isLoaded : false;
-//	}
-//
 //	public static Module getModule(ModuleType moduleType) throws IllegalAccessException
 //	{
 //		if(!isLoaded()) throw new IllegalAccessException("The " + FRAMEWORKNAME + " is not loaded");
-//		if(!CACHE.loadedModules.containsKey(moduleType.getModuleClass())) throw new IllegalAccessException("The " + moduleType.name() + " module is not loaded");
+//		if(!CACHE.loadedModules.containsKey(moduleType.getModuleClass())) throw new IllegalAccessException("The " + moduleType.name() + " module is not enabled");
 //		Module module;
 //		if((module = CACHE.loadedModules.get(moduleType.getModuleClass())) == null) throw new NullPointerException("The " + moduleType.name() + " module is not loaded correctly");
 //		
 //		return module;
 //	}
-//}
+
+}
+
+
+
+
+
 //
 //final class NFWCache {
 //	
@@ -76,29 +134,40 @@ public final class NFWCore {
 //
 //	public HashMap<Class<? extends Module>, Module> loadedModules = new HashMap<>();
 //
-//	public void loadModule(Class<? extends Module> moduleClass) {
+//	public void enableModule(Class<? extends Module> moduleClass) {
 //		if(loadedModules.containsKey(moduleClass)) return;
 //		
 //		try {
 //			Constructor<? extends Module> obj = moduleClass.getConstructor();
 //			Module module = obj.newInstance();
+//			module.onEnable();
 //			loadedModules.put(moduleClass, module);
-//			Logger.logDebug(moduleClass.getSimpleName() + " Module loaded... v" + module.getModuleType().getModuleVersion() + " " + module.getModuleType().getDescription());
+//			Logger.logDebug(moduleClass.getSimpleName() + " Module enabled... v" + module.getModuleType().getModuleVersion() + " " + module.getModuleType().getDescription());
 //		} catch (Exception ex) {
 //			ex.printStackTrace();
 //		}
 //	}
 //	
-//	public void loadModule(ModuleType moduleType)
+//	public void enableModule(ModuleType moduleType)
 //	{
-//		loadModule(moduleType.getModuleClass());
+//		enableModule(moduleType.getModuleClass());
 //	}
+//
+//	public void disableModule(Class<? extends Module> moduleClass) {
+//		if(!loadedModules.containsKey(moduleClass)) return;
+//		
+//		Module module = loadedModules.get(moduleClass);
+//		Logger.logDebug("Disabling " + module.getClass().getSimpleName() + "...");
+//		module.onDisable();
+//		Logger.logDebug(module.getClass().getSimpleName() + " disabled! v" + module.getModuleType().getModuleVersion());
+//	}
+//	
+//	public void disableModule(ModuleType moduleType)
+//	{
+//		disableModule(moduleType.getModuleClass());
+//	}
+//
 //}
-
-
-
-
-
 
 
 

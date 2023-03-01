@@ -1,6 +1,8 @@
 package de.nebalus.dcbots.melody.core;
 
 import de.nebalus.dcbots.melody.listener.InteractionListener;
+import de.nebalus.framework.nfw.core.NFWCore;
+import de.nebalus.framework.nfw.module.ModuleType;
 import de.nebalus.framework.nfw.utils.logger.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -16,6 +18,8 @@ public class Melody
 	
 	public static void main(String[] args)
 	{
+		NFWCore.loadFramework(ModuleType.DCBOTBUILDER); // Loads the needed modules
+			
 		try
 		{	
 			BOTINSTANCE = new Melody();
@@ -49,6 +53,6 @@ public class Melody
 		jda = builder.build();
 		jda.awaitReady();
 		
-		Logger.log("Melodys connection was succesfully build in " + (System.currentTimeMillis() - startUpTimestamp) + "ms");		
+		Logger.log("Melodys connection was succesfully build in " + (System.currentTimeMillis() - startUpTimestamp) + "ms");	
 	}
 }

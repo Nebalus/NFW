@@ -1,6 +1,6 @@
 package de.nebalus.framework.nfw.module;
 
-public class Module {
+public abstract class Module {
 	
 	protected final ModuleType moduleType;
 	
@@ -8,9 +8,12 @@ public class Module {
 		this.moduleType = moduleType;
 	}
 	
-	public final ModuleType getModuleType()
+	public ModuleType getModuleType()
 	{
 		return moduleType;
 	}
+
+	public abstract void onEnable();
 	
+	public abstract void onDisable();
 }
