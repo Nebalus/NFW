@@ -1,4 +1,4 @@
-# !!! Still in Prealpha !!!
+# ⚠️WARNING!!!⚠️ This program is still in development **PreAlpha** phase
 
 # NFW (NebalusFrameWork)
 The Idea is to create a framework with different modules to create seppreate tasks... One module is used to create DC-Bots easyer, another one is a Minecraft Module where you can make better Minecraft plugins.
